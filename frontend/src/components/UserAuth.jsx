@@ -213,8 +213,11 @@ useEffect(() => {
       });
     } catch (err) {
       console.error('Login error:', err);
-      
+      console.error('Error response:', err.response);
+      console.error('Error status:', err.response?.status);
+      console.error('Error data:', err.response?.data);
       if (err.response?.status === 401) {
+        console.log('Setting showRegister to true');
         // User doesn't exist or password is wrong
         setErrors({ 
           general: 'Invalid credentials. User not found. Would you like to create a new account?',
@@ -504,6 +507,7 @@ if (!formData.username.trim()) {
     textAlign: 'center'
   }}>
     {errors.general}
+    {console.log('errors.showRegister:', errors.showRegister)}
     {errors.showRegister && (
       <div style={{ marginTop: '10px' }}>
         <button
