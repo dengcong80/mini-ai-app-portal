@@ -507,7 +507,7 @@ if (!formData.username.trim()) {
     textAlign: 'center'
   }}>
     {errors.general}
-    {console.log('errors.showRegister:', errors.showRegister)}
+     {console.log('errors.showRegister:', errors.showRegister)}
     {errors.showRegister && (
       <div style={{ marginTop: '10px' }}>
         <button
@@ -821,12 +821,6 @@ if (!formData.username.trim()) {
                   </div>
                 )}
               </div>
-
-              {errors.general && (
-                <div style={{ color: 'red', marginBottom: '15px' }}>
-                  {errors.general}
-                </div>
-              )}
 
               <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
                 <button
