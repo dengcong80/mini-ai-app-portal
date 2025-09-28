@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-
+import API_BASE_URL from '../config/api';
 const DashboardPage = ({ user }) => {
   const [projects, setProjects] = useState([]);
   const [allProjects, setAllProjects] = useState([]); // Store all projects for filtering
@@ -38,7 +38,7 @@ const DashboardPage = ({ user }) => {
   const fetchAllProjects = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await axios.get('/api/requirements');
+      const res = await axios.get(`${API_BASE_URL}/api/requirements`);
       const projects = res.data;
       
       setAllProjects(projects);

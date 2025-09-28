@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-
+import API_BASE_URL from '../config/api';
 const RequirementCapture = () => {
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
@@ -15,7 +15,7 @@ const RequirementCapture = () => {
     setLoading(true);
     try {
       // Only call extractRAOS, don't generate HTML
-      const res = await axios.post('/api/requirements', { description });
+      const res = await axios.post(`${API_BASE_URL}/api/requirements`, { description });
       // Navigate to RAOS page
       navigate(`/raos/${res.data.id}`);
     } catch (err) {

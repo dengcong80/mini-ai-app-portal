@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-
+import API_BASE_URL from '../config/api';
 const RAOSPage = ({ user }) => {
   const [requirement, setRequirement] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -21,7 +21,7 @@ const RAOSPage = ({ user }) => {
   const fetchRequirement = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`/api/requirements/${id}`);
+      const res = await axios.get(`${API_BASE_URL}/api/requirements/${id}`);
      // console.log('Fetched requirement:', res.data);
      // console.log('Created by:', res.data.createdBy);
      // console.log('Current user:', user);
@@ -57,7 +57,7 @@ const RAOSPage = ({ user }) => {
         // Save edited content first
         setSaving(true);
         try {
-          const res = await axios.put(`/api/requirements/${id}`, editData, {
+          const res = await axios.put(`${API_BASE_URL}/api/requirements/${id}`, editData, {
             headers: {
               Authorization: `Bearer ${localStorage.getItem('token')}`
             }
@@ -82,7 +82,7 @@ const RAOSPage = ({ user }) => {
     // Generate UI
     setGenerating(true);
     try {
-      await axios.post(`/api/requirements/${id}/generate-ui`);
+      await axios.post(`${API_BASE_URL}/api/requirements/${id}/generate-ui`);
       navigate(`/mock/${id}`);
     } catch (err) {
       console.error('Error generating UI:', err);
@@ -163,7 +163,7 @@ const RAOSPage = ({ user }) => {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const res = await axios.put(`/api/requirements/${id}`, editData, {
+      const res = await axios.put(`${API_BASE_URL}/api/requirements/${id}`, editData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }

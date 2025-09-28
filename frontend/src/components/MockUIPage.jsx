@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import DOMPurify from 'dompurify';
-
+import API_BASE_URL from '../config/api';
 export default function MockUIPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -13,7 +13,7 @@ export default function MockUIPage() {
 
   useEffect(() => {
     setLoading(true);
-    axios.get(`/api/requirements/${id}`)
+    axios.get(`${API_BASE_URL}/api/requirements/${id}`)
       .then(res => {
         setHtml(DOMPurify.sanitize(res.data.mockHtml || ''));
         setLoading(false);

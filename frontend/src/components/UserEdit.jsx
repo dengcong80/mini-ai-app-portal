@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import API_BASE_URL from '../config/api';
 const UserEdit = ({ user, onUpdate, onLogout }) => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
@@ -22,9 +23,9 @@ const UserEdit = ({ user, onUpdate, onLogout }) => {
   ], []);
 
   // Define API base URL
-  const API_BASE_URL = process.env.NODE_ENV === 'production' 
+  /**const API_BASE_URL = process.env.NODE_ENV === 'production' 
     ? 'https://your-production-api.com' 
-    : 'http://localhost:5000';
+    : 'http://localhost:5000'; **/
 
   useEffect(() => {
     // Initialize form data

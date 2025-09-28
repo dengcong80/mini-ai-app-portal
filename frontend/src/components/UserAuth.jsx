@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
-
+import API_BASE_URL from '../config/api';
 const UserAuth = ({ onLogin, onLogout, user }) => {
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
@@ -30,9 +30,9 @@ const UserAuth = ({ onLogin, onLogout, user }) => {
   ], []);
 
   // Define API base URL
-  const API_BASE_URL = process.env.NODE_ENV === 'production' 
+  /**const API_BASE_URL = process.env.NODE_ENV === 'production' 
     ? 'https://your-production-api.com' 
-    : 'http://localhost:5000';
+    : 'http://localhost:5000'; **/
 
   useEffect(() => {
     // Get avatar options

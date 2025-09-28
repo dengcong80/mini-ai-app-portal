@@ -7,7 +7,7 @@ import MockUIPage from './components/MockUIPage';
 import RAOSPage from './components/RAOSPage';
 import UserAuth from './components/UserAuth';
 import UserEdit from './components/UserEdit';
-
+import API_BASE_URL from './config/api';
 import DashboardPage from './components/DashboardPage';
 export default function App() {
   const [user, setUser] = useState(null);
@@ -18,7 +18,7 @@ export default function App() {
     const token = localStorage.getItem('token');
     if (token) {
       // Verify token and get user information
-      axios.get('/api/users/me', {
+      axios.get(`${API_BASE_URL}/api/users/me`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       .then(res => setUser(res.data.user))

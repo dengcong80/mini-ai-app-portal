@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-
+import API_BASE_URL from '../config/api';
 export default function HistoryPage({ user, onLogin, onLogout }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -25,7 +25,7 @@ const itemsPerPage = 10; // Display 10 items per page
       //console.log('Token:', localStorage.getItem('token'));
       
       // Only get projects created by current user
-      axios.get('/api/requirements/my', {
+      axios.get(`${API_BASE_URL}/api/requirements/my`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       })
       .then(res => {
@@ -57,7 +57,7 @@ const itemsPerPage = 10; // Display 10 items per page
   const handleDelete = async (id) => {
     if (!window.confirm('Delete this prototype?')) return;
     try {
-      await axios.delete(`/api/requirements/${id}`, {
+      await axios.delete(`${API_BASE_URL}/api/requirements/${id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
     setItems(prev => prev.filter(item => item._id !== id));
@@ -86,7 +86,7 @@ const itemsPerPage = 10; // Display 10 items per page
     setErrors({});
 
     try {
-      const res = await axios.post('/api/users/login', formData);
+      const res = await axios.post(`${API_BASE_URL}/api/users/login`, formData);
 
       localStorage.setItem('token', res.data.token);
       onLogin(res.data.user);

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-
+import API_BASE_URL from '../config/api';
 export default function HomePage({ user, onLogin, onLogout }) {
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
@@ -55,7 +55,7 @@ const handleLogin = async (e) => {
   setErrors({});
 
   try {
-    const res = await axios.post('/api/users/login', formData);
+    const res = await axios.post(`${API_BASE_URL}/api/users/login`, formData);
 
     localStorage.setItem('token', res.data.token);
     onLogin(res.data.user);
@@ -104,7 +104,7 @@ const handleRegisterRedirect = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.post('/api/requirements', { description },{headers: { Authorization: `Bearer ${token}` }});
+      const res = await axios.post(`${API_BASE_URL}/api/requirements`, { description },{headers: { Authorization: `Bearer ${token}` }});
       navigate(`/raos/${res.data.id}`);
     } catch (err) {
       alert('Generation failed: ' + (err.response?.data?.error || 'Unknown error'));
