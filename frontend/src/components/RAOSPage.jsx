@@ -40,7 +40,7 @@ const RAOSPage = ({ user }) => {
     } finally {
       setLoading(false);
     }
-  }, [id, user]);
+  }, [id]);
 
   useEffect(() => {
     fetchRequirement();

@@ -18,8 +18,9 @@ const requirementSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 requirementSchema.index({ createdBy: 1, createdAt: -1 });
-requirementSchema.index({ appName: 1 });
-requirementSchema.index({ mockHtml: 1 });
+requirementSchema.index({ appName: 1, createdAt: -1 });
+requirementSchema.index({ mockHtml: 1, createdAt: -1 });
+requirementSchema.index({ createdAt: -1 });
 
 
 module.exports = mongoose.model('Requirement', requirementSchema);

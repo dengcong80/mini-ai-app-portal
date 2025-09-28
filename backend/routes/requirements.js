@@ -135,11 +135,24 @@ function isValidHTML(html) {
 // ✅ 3. Get history list → GET /
 router.get('/', async (req, res) => {
   try {
-    const requirements = await Requirement.find()
-    .populate('createdBy', 'username realName avatar') // Add creator information
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const [requirements, total] = await Promise.all([
+      Requirement.find()
+      .populate('createdBy', 'username realName avatar') // Add creator information
       .sort({ createdAt: -1 })
-      .select('appName appDescription createdAt mockHtml createdBy'); // Add mockHtml and createdBy fields
-    res.json(requirements);
+      .select('appName appDescription createdAt mockHtml createdBy')
+      .skip(skip)
+      .limit(limit),
+      Requirement.countDocuments()]);
+      res.json({
+        requirements,
+        totalPages: Math.ceil(total / limit),
+        currentPage: page,
+        total
+      });
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch history' });
   }
@@ -150,13 +163,25 @@ router.get('/', async (req, res) => {
 router.get('/my', authenticateToken, async (req, res) => {
     try {
     //  console.log('User ID:', req.user._id); // Add debug log
-      
-      const requirements = await Requirement.find({ createdBy: req.user._id })
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    const [requirements, total] = await Promise.all([
+         Requirement.find({ createdBy: req.user._id })
         .populate('createdBy', 'username realName avatar')
-        .sort({ createdAt: -1 });
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+      Requirement.countDocuments({ createdBy: req.user._id })
+    ]);
       
     //  console.log('Found requirements:', requirements.length); // Add debug log
-      res.json(requirements);
+    res.json({
+      requirements,
+      totalPages: Math.ceil(total / limit),
+      currentPage: page,
+      total
+    });
     } catch (error) {
       console.error('Error fetching user requirements:', error);
       console.error('Error details:', error.message);

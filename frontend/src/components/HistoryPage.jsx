@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useCallback,useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import API_BASE_URL from '../config/api';
@@ -19,40 +19,66 @@ export default function HistoryPage({ user, onLogin, onLogout }) {
 const [totalPages, setTotalPages] = useState(1);
 const itemsPerPage = 10; // Display 10 items per page
 
-  useEffect(() => {
-    if (user) {
-      //console.log('Fetching requirements for user:', user);
-      //console.log('Token:', localStorage.getItem('token'));
-      
-      // Only get projects created by current user
-      axios.get(`${API_BASE_URL}/api/requirements/my`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      })
-      .then(res => {
-       // console.log('Requirements response:', res.data);
-        
-        // Add pagination calculation
-        const allRequirements = res.data;
-        const total = Math.ceil(allRequirements.length / itemsPerPage);
-        setTotalPages(total);
-        
-        // Get current page items
-        const startIndex = (currentPage - 1) * itemsPerPage;
-        const endIndex = startIndex + itemsPerPage;
-        const currentRequirements = allRequirements.slice(startIndex, endIndex);
-        
-        setItems(currentRequirements); // Set current page data
-      })
-      .catch(err => {
-        console.error('Failed to fetch user requirements:', err);
-        console.error('Error response:', err.response?.data);
-        setItems([]);
-      })
-      .finally(() => setLoading(false));
-    } else {
-      setLoading(false);
-    }
-  }, [user,currentPage]);
+
+
+// add cache
+const [cache, setCache] = useState(new Map());
+
+// fetch user requirements
+const fetchUserRequirements = useCallback(async (page = 1) => {
+  if (!user) return;
+  
+  try {
+    setLoading(true);
+    const res = await axios.get(`${API_BASE_URL}/api/requirements/my?page=${page}&limit=${itemsPerPage}`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    });
+    
+    const { requirements, totalPages, currentPage, total } = res.data;
+    
+    // cache data
+    const cacheKey = `user_requirements_${page}`;
+    setCache(prev => new Map(prev.set(cacheKey, {
+      requirements,
+      totalPages,
+      currentPage,
+      total
+    })));
+    
+    setItems(requirements);
+    setTotalPages(totalPages);
+    setCurrentPage(currentPage);
+  } catch (err) {
+    console.error('Failed to fetch user requirements:', err);
+    console.error('Error response:', err.response?.data);
+    setItems([]);
+  } finally {
+    setLoading(false);
+  }
+}, [user, itemsPerPage]);
+
+// fetch with cache
+const fetchWithCache = useCallback(async (page) => {
+  const cacheKey = `user_requirements_${page}`;
+  if (cache.has(cacheKey)) {
+    const cached = cache.get(cacheKey);
+    setItems(cached.requirements);
+    setTotalPages(cached.totalPages);
+    setCurrentPage(cached.currentPage);
+    return;
+  }
+  
+  await fetchUserRequirements(page);
+}, [cache, fetchUserRequirements]);
+
+
+useEffect(() => {
+  if (user) {
+    fetchWithCache(currentPage);
+  } else {
+    setLoading(false);
+  }
+}, [user, currentPage, fetchWithCache]);
 
   const handleDelete = async (id) => {
     if (!window.confirm('Delete this prototype?')) return;
@@ -69,6 +95,7 @@ const itemsPerPage = 10; // Display 10 items per page
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
+    fetchWithCache(page);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
   const handleInputChange = (e) => {

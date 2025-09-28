@@ -52,7 +52,7 @@ const UserAuth = ({ onLogin, onLogout, user }) => {
     };
 
     fetchAvatars();
-  }, [API_BASE_URL,fallbackAvatars]);
+  }, [fallbackAvatars]);
 
 
   // Add this useEffect to listen for errors.showRegister changes

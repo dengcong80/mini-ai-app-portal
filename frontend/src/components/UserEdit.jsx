@@ -54,7 +54,7 @@ const UserEdit = ({ user, onUpdate, onLogout }) => {
     };
 
     fetchAvatars();
-  }, [user, API_BASE_URL, fallbackAvatars]);
+  }, [user, fallbackAvatars]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

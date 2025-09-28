@@ -17,7 +17,8 @@ const DashboardPage = ({ user }) => {
   const [statusFilter, setStatusFilter] = useState('all'); // 'all', 'Completed', 'In Process'
 
   const itemsPerPage = 5;
-
+  // add cache
+  const [cache, setCache] = useState(new Map());
   // Define getStatus function before useMemo
   const getStatus = (project) => {
     return project.mockHtml ? 'Completed' : 'In Process';
@@ -35,28 +36,103 @@ const DashboardPage = ({ user }) => {
     };
   };
 
-  const fetchAllProjects = useCallback(async () => {
+  const fetchAllProjects = useCallback(async (page = 1) => {
     try {
       setLoading(true);
-      const res = await axios.get(`${API_BASE_URL}/api/requirements`);
-      const projects = res.data;
+      console.log('Fetching projects from:', `${API_BASE_URL}/api/requirements?page=${page}&limit=${itemsPerPage}`);
+   
+      const res = await axios.get(`${API_BASE_URL}/api/requirements?page=${page}&limit=${itemsPerPage}`);
+      console.log('API Response:', res.data);
+      const { requirements, totalPages, currentPage, total } = res.data;
       
-      setAllProjects(projects);
+      // cache data
+      const cacheKey = `projects_${page}`;
+      setCache(prev => new Map(prev.set(cacheKey, {
+        requirements,
+        totalPages,
+        currentPage,
+        total
+      })));
+      
+      setProjects(requirements);
+      setTotalPages(totalPages);
+      setCurrentPage(currentPage);
     } catch (err) {
       console.error('Failed to fetch projects:', err);
+      console.error('Error details:', err.response?.data);
       setError('Failed to load projects');
     } finally {
       setLoading(false);
     }
   }, []);
 
-  useEffect(() => {
-    fetchAllProjects();
-  }, [fetchAllProjects]);
+
+
+
+
+
+const fetchWithCache = useCallback(async (page) => {
+  const cacheKey = `projects_${page}`;
+  if (cache.has(cacheKey)) {
+    const cached = cache.get(cacheKey);
+    setProjects(cached.requirements);
+    setTotalPages(cached.totalPages);
+    setCurrentPage(cached.currentPage);
+    return;
+  }
+  
+  try {
+    setLoading(true);
+    const res = await axios.get(`${API_BASE_URL}/api/requirements?page=${page}&limit=${itemsPerPage}`);
+    const { requirements, totalPages, currentPage, total } = res.data;
+    
+    // cache data
+    const cacheKey = `projects_${page}`;
+    setCache(prev => new Map(prev.set(cacheKey, {
+      requirements,
+      totalPages,
+      currentPage,
+      total
+    })));
+    
+    setProjects(requirements);
+    setTotalPages(totalPages);
+    setCurrentPage(currentPage);
+  } catch (err) {
+    console.error('Failed to fetch projects:', err);
+    setError('Failed to load projects');
+  } finally {
+    setLoading(false);
+  }
+}, [ itemsPerPage]);
+
+useEffect(() => {
+  fetchWithCache(1);
+}, [fetchWithCache]);
+
+
+// add fetch all projects for search
+const fetchAllProjectsForSearch = useCallback(async () => {
+  try {
+    const res = await axios.get(`${API_BASE_URL}/api/requirements?page=1&limit=1000`); // 获取大量数据用于搜索
+    setAllProjects(res.data.requirements);
+  } catch (err) {
+    console.error('Failed to fetch all projects for search:', err);
+  }
+}, []);
+
+// when search starts, fetch all data
+useEffect(() => {
+  if (searchTerm.trim()) {
+    fetchAllProjectsForSearch();
+  }else{
+    setAllProjects([]);
+  }
+}, [searchTerm, fetchAllProjectsForSearch]);
 
   // Filter and paginate projects based on search
   const filteredProjects = useMemo(() => {
-    let filtered = allProjects;
+    let filtered = searchTerm.trim() ? allProjects : projects;
 
     // Apply search filter
     if (searchTerm.trim()) {
@@ -84,33 +160,18 @@ const DashboardPage = ({ user }) => {
     }
 
     return filtered;
-  }, [allProjects, searchTerm, searchBy, statusFilter]);
+  }, [projects,allProjects, searchTerm, searchBy, statusFilter]);
 
-  // Update pagination when filtered results change
-  useEffect(() => {
-    const total = Math.ceil(filteredProjects.length / itemsPerPage);
-    setTotalPages(total);
-    
-    // Reset to first page if current page is beyond new total
-    if (currentPage > total && total > 0) {
-      setCurrentPage(1);
-    }
-  }, [filteredProjects.length, currentPage]);
+ 
 
-  // Get current page items from filtered results
-  const currentPageProjects = useMemo(() => {
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    return filteredProjects.slice(startIndex, endIndex);
-  }, [filteredProjects, currentPage, itemsPerPage]);
+ 
+  
 
-  // Update displayed projects when pagination changes
-  useEffect(() => {
-    setProjects(currentPageProjects);
-  }, [currentPageProjects]);
+
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
+    fetchWithCache(page); 
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
