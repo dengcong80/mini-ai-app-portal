@@ -273,6 +273,9 @@ router.get('/avatars', (req, res) => {
 // Add route to get specific user information
 router.get('/:id', async (req, res) => {
     try {
+      if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+        return res.status(400).json({ error: 'Invalid user ID format' });
+      }
       const user = await User.findById(req.params.id).select('-password');
       if (!user) {
         return res.status(404).json({ error: 'User not found' });
