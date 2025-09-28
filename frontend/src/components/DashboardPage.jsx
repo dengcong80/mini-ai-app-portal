@@ -10,7 +10,7 @@ const DashboardPage = ({ user }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const navigate = useNavigate();
-
+  const [totalProjects, setTotalProjects] = useState(0);
   // Search states
   const [searchTerm, setSearchTerm] = useState('');
   const [searchBy, setSearchBy] = useState('appName'); // 'appName', 'createdBy', 'status'
@@ -78,6 +78,7 @@ const fetchWithCache = useCallback(async (page) => {
     setProjects(cached.requirements);
     setTotalPages(cached.totalPages);
     setCurrentPage(cached.currentPage);
+    setTotalProjects(cached.total); 
     return;
   }
   
@@ -98,6 +99,7 @@ const fetchWithCache = useCallback(async (page) => {
     setProjects(requirements);
     setTotalPages(totalPages);
     setCurrentPage(currentPage);
+    setTotalProjects(total); 
   } catch (err) {
     console.error('Failed to fetch projects:', err);
     setError('Failed to load projects');
@@ -398,7 +400,8 @@ useEffect(() => {
           Explore all projects created by our community. Click to view RAOS and UI mockups.
         </p>
         <p style={{ color: '#6c757d', margin: '5px 0 0 0', fontSize: '0.9rem' }}>
-          Page {currentPage} of {totalPages}  ({filteredProjects.length} projects found )
+          Page {currentPage} of {totalPages}  ({totalProjects} projects found )
+          {searchTerm && ` • ${filteredProjects.length} matching results`}
         </p>
       </div>
 

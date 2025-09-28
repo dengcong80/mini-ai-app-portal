@@ -17,6 +17,7 @@ export default function HistoryPage({ user, onLogin, onLogout }) {
 
   const [currentPage, setCurrentPage] = useState(1);
 const [totalPages, setTotalPages] = useState(1);
+const [totalProjects, setTotalProjects] = useState(0); 
 const itemsPerPage = 10; // Display 10 items per page
 
 
@@ -48,6 +49,7 @@ const fetchUserRequirements = useCallback(async (page = 1) => {
     setItems(requirements);
     setTotalPages(totalPages);
     setCurrentPage(currentPage);
+    setTotalProjects(total);
   } catch (err) {
     console.error('Failed to fetch user requirements:', err);
     console.error('Error response:', err.response?.data);
@@ -65,6 +67,7 @@ const fetchWithCache = useCallback(async (page) => {
     setItems(cached.requirements);
     setTotalPages(cached.totalPages);
     setCurrentPage(cached.currentPage);
+    setTotalProjects(cached.total);
     return;
   }
   
@@ -537,7 +540,7 @@ useEffect(() => {
             Welcome back, {user.realName}! Here are your generated prototypes.
           </p>
           <p style={{ color: '#6c757d', margin: '5px 0 0 0', fontSize: '0.9rem' }}>
-    Page {currentPage} of {totalPages}
+    Page {currentPage} of {totalPages}  ({totalProjects} projects found )
   </p>
         </div>
         <button
