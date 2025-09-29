@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import API_BASE_URL from '../config/api';
+import { responsive } from '../utils/responsive';
 const UserEdit = ({ user, onUpdate, onLogout }) => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
@@ -187,12 +188,20 @@ const UserEdit = ({ user, onUpdate, onLogout }) => {
 
   return (
     <div style={{
+      ...responsive.container,
       maxWidth: '600px',
-      margin: '0 auto',
       padding: '40px',
       background: 'white',
       borderRadius: '15px',
-      boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
+      boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
+      [responsive.mediaQuery('768px')]: {
+        padding: '30px',
+        borderRadius: '12px'
+      },
+      [responsive.mediaQuery('480px')]: {
+        padding: '20px',
+        borderRadius: '10px'
+      }
     }}>
       <div style={{
         textAlign: 'center',
@@ -235,12 +244,11 @@ const UserEdit = ({ user, onUpdate, onLogout }) => {
             value={formData.username}
             onChange={handleInputChange}
             style={{
-              width: '100%',
+              ...responsive.input,
               padding: '12px 15px',
               border: errors.username ? '2px solid #dc3545' : '2px solid #dee2e6',
               borderRadius: '8px',
               fontSize: '1rem',
-              boxSizing: 'border-box',
               transition: 'border-color 0.3s ease'
             }}
             placeholder="Enter your username"
@@ -403,10 +411,8 @@ const UserEdit = ({ user, onUpdate, onLogout }) => {
         )}
 
         <div style={{
-          display: 'flex',
-          gap: '15px',
-          justifyContent: 'center',
-          flexWrap: 'wrap'
+           ...responsive.buttonGroup,
+           justifyContent: 'center'
         }}>
           <button
             type="submit"

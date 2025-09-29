@@ -1,7 +1,8 @@
-import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import API_BASE_URL from '../config/api';
+import { responsive } from '../utils/responsive';
 const DashboardPage = ({ user }) => {
   const [projects, setProjects] = useState([]);
   const [allProjects, setAllProjects] = useState([]); // Store all projects for filtering
@@ -18,7 +19,7 @@ const DashboardPage = ({ user }) => {
 
   const itemsPerPage = 5;
   // add cache
-  const [cache, setCache] = useState(new Map());
+  const cacheRef = useRef(new Map());
   // Define getStatus function before useMemo
   const getStatus = (project) => {
     return project.mockHtml ? 'Completed' : 'In Process';
@@ -47,12 +48,12 @@ const DashboardPage = ({ user }) => {
       
       // cache data
       const cacheKey = `projects_${page}`;
-      setCache(prev => new Map(prev.set(cacheKey, {
+      cacheRef.current.set(cacheKey, {
         requirements,
         totalPages,
         currentPage,
         total
-      })));
+      });
       
       setProjects(requirements);
       setTotalPages(totalPages);
@@ -73,8 +74,8 @@ const DashboardPage = ({ user }) => {
 
 const fetchWithCache = useCallback(async (page) => {
   const cacheKey = `projects_${page}`;
-  if (cache.has(cacheKey)) {
-    const cached = cache.get(cacheKey);
+  if (cacheRef.current.has(cacheKey)) {
+    const cached = cacheRef.current.get(cacheKey);
     setProjects(cached.requirements);
     setTotalPages(cached.totalPages);
     setCurrentPage(cached.currentPage);
@@ -89,12 +90,12 @@ const fetchWithCache = useCallback(async (page) => {
     
     // cache data
     const cacheKey = `projects_${page}`;
-    setCache(prev => new Map(prev.set(cacheKey, {
+    cacheRef.current.set(cacheKey, {
       requirements,
       totalPages,
       currentPage,
       total
-    })));
+    });
     
     setProjects(requirements);
     setTotalPages(totalPages);
@@ -301,14 +302,7 @@ useEffect(() => {
     }
 
     return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        gap: '10px',
-        marginTop: '30px',
-        flexWrap: 'wrap'
-      }}>
+      <div style={responsive.pagination}>
         {/* Previous page button */}
         <button
           onClick={() => handlePageChange(currentPage - 1)}
@@ -393,7 +387,7 @@ useEffect(() => {
   }
 
   return (
-    <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
+    <div style={responsive.container}>
       <div style={{ marginBottom: '30px' }}>
         <h2>📊 Public Dashboard</h2>
         <p style={{ color: '#6c757d', margin: '0' }}>
@@ -407,18 +401,14 @@ useEffect(() => {
 
       {/* Search and Filter Section */}
       <div style={{
-        background: 'white',
-        border: '1px solid #e9ecef',
-        borderRadius: '12px',
-        padding: '20px',
-        marginBottom: '30px',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+        ...responsive.card,
+        marginBottom: '30px'
       }}>
         <h3 style={{ margin: '0 0 20px 0', color: '#2c3e50', fontSize: '1.2rem' }}>
           🔍 Search & Filter
         </h3>
         
-        <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap', alignItems: 'end' }}>
+        <div style={responsive.searchForm}>
           {/* Search Input */}
           <div style={{ flex: '1', minWidth: '200px' }}>
             <label style={{ display: 'block', marginBottom: '5px', fontWeight: '500', color: '#495057' }}>
@@ -429,14 +419,7 @@ useEffect(() => {
               value={searchTerm}
               onChange={handleSearchChange}
               placeholder={`Search by ${searchBy === 'appName' ? 'app name' : searchBy === 'createdBy' ? 'creator name' : 'status'}...`}
-              style={{
-                width: '100%',
-                padding: '10px',
-                border: '1px solid #dee2e6',
-                borderRadius: '6px',
-                fontSize: '14px',
-                boxSizing: 'border-box'
-              }}
+              style={responsive.input}
             />
           </div>
 
@@ -542,7 +525,14 @@ useEffect(() => {
         </div>
       ) : (
         <>
-          <div style={{ display: 'grid', gap: '20px' }}>
+          <div style={{ display: 'grid',
+  gap: '20px',
+  gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
+  [responsive.mediaQuery('768px')]: {
+    gridTemplateColumns: '1fr',
+    gap: '15px'
+  }
+  }}>
             {projects.map(project => {
               const status = getStatus(project);
               return (
@@ -565,7 +555,16 @@ useEffect(() => {
                     e.currentTarget.style.transform = 'translateY(0)';
                   }}
                 >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px' }}>
+                  <div style={{ 
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-start',
+                    marginBottom: '15px',
+                    [responsive.mediaQuery('480px')]: {
+                      flexDirection: 'column',
+                      gap: '10px'
+                    }
+                   }}>
                     <div style={{ flex: 1 }}>
                       <h3 style={{ 
                         margin: '0 0 8px 0', 
@@ -579,9 +578,10 @@ useEffect(() => {
                         margin: '0 0 10px 0', 
                         color: '#6c757d',
                         lineHeight: '1.5',
-                        maxHeight: '60px',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis'
+                        maxHeight: '120px',
+                        overflow: 'auto',
+                        wordWrap: 'break-word',
+                        whiteSpace: 'pre-wrap'
                       }}>
                         {project.appDescription || 'No description available'}
                       </p>
@@ -623,7 +623,14 @@ useEffect(() => {
                     </div>
                   </div>
 
-                  <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+                  <div style={{ display: 'flex',
+  gap: '10px',
+  justifyContent: 'flex-end',
+  [responsive.mediaQuery('480px')]: {
+    flexDirection: 'column',
+    gap: '8px'
+  }
+   }}>
                     <button
                       onClick={() => navigate(`/raos/${project._id}`)}
                       style={{

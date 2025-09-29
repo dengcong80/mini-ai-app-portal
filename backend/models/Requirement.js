@@ -21,6 +21,7 @@ requirementSchema.index({ createdBy: 1, createdAt: -1 });
 requirementSchema.index({ appName: 1, createdAt: -1 });
 requirementSchema.index({ mockHtml: 1, createdAt: -1 });
 requirementSchema.index({ createdAt: -1 });
+requirementSchema.index({ appDescription: 1 });
 
 
 module.exports = mongoose.model('Requirement', requirementSchema);

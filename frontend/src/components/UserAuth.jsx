@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import API_BASE_URL from '../config/api';
+import { responsive } from '../utils/responsive';
 const UserAuth = ({ onLogin, onLogout, user }) => {
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
@@ -55,16 +56,6 @@ const UserAuth = ({ onLogin, onLogout, user }) => {
   }, [fallbackAvatars]);
 
 
-  // Add this useEffect to listen for errors.showRegister changes
-useEffect(() => {
-    if (errors.showRegister) {
-      //console.log('errors.showRegister is true, opening register modal');
-      setShowLogin(false);
-      setShowRegister(true);
-      // Clear showRegister error flag
-      setErrors(prev => ({ ...prev, showRegister: false }));
-    }
-  }, [errors.showRegister]);
 
 
   // Add useEffect in UserAuth component to show initial validation prompts
@@ -217,11 +208,9 @@ useEffect(() => {
       console.error('Error status:', err.response?.status);
       console.error('Error data:', err.response?.data);
       if (err.response?.status === 401) {
-        console.log('Setting showRegister to true');
-        // User doesn't exist or password is wrong
         setErrors({ 
           general: 'Invalid credentials. User not found. Would you like to create a new account?',
-          showRegister: true 
+          showCreateAccount: true 
         });
       } else if (err.response?.status === 400) {
         setErrors({ general: err.response.data.error });
@@ -432,7 +421,17 @@ if (!formData.username.trim()) {
             padding: '30px',
             borderRadius: '10px',
             width: '400px',
-            maxWidth: '90vw'
+            maxWidth: '90vw',
+            [responsive.mediaQuery('768px')]: {
+              padding: '25px',
+              borderRadius: '8px',
+              width: '350px'
+            },
+            [responsive.mediaQuery('480px')]: {
+              padding: '20px',
+              borderRadius: '6px',
+              width: '320px'
+            }
           }}>
             <h3>Login</h3>
             <form onSubmit={handleLogin}>
@@ -443,13 +442,7 @@ if (!formData.username.trim()) {
                   placeholder="Username"
                   value={formData.username}
                   onChange={handleInputChange}
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    border: '1px solid #ddd',
-                    borderRadius: '4px',
-                    boxSizing: 'border-box'
-                  }}
+                  style={responsive.input}
                   required
                 />
               </div>
@@ -462,11 +455,8 @@ if (!formData.username.trim()) {
                     value={formData.password}
                     onChange={handleInputChange}
                     style={{
-                      width: '100%',
-                      padding: '10px 40px 10px 10px',
-                      border: '1px solid #ddd',
-                      borderRadius: '4px',
-                      boxSizing: 'border-box'
+                      ...responsive.input,
+                      padding: '10px 40px 10px 10px'
                     }}
                     required
                   />
@@ -498,17 +488,17 @@ if (!formData.username.trim()) {
                {/* Add registration redirect button in login modal */}
                {errors.general && (
   <div style={{
-    color: errors.showRegister ? '#007bff' : '#dc3545',
-    backgroundColor: errors.showRegister ? '#e3f2fd' : '#f8d7da',
-    border: errors.showRegister ? '1px solid #bbdefb' : '1px solid #f5c6cb',
+    color: errors.showCreateAccount ? '#007bff' : '#dc3545',
+    backgroundColor: errors.showCreateAccount ? '#e3f2fd' : '#f8d7da',
+    border: errors.showCreateAccount ? '1px solid #bbdefb' : '1px solid #f5c6cb',
     borderRadius: '8px',
     padding: '12px',
     marginBottom: '15px',
     textAlign: 'center'
   }}>
     {errors.general}
-     {console.log('errors.showRegister:', errors.showRegister)}
-    {errors.showRegister && (
+     {console.log('errors.showCreateAccount:', errors.showCreateAccount)}
+    {errors.showCreateAccount && (
       <div style={{ marginTop: '10px' }}>
         <button
           type="button"
@@ -538,7 +528,7 @@ if (!formData.username.trim()) {
     )}
   </div>
 )}
-              <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+              <div style={responsive.buttonGroup}>
                 <button
                   type="button"
                   onClick={() => setShowLogin(false)}
@@ -594,7 +584,17 @@ if (!formData.username.trim()) {
             width: '500px',
             maxWidth: '90vw',
             maxHeight: '90vh',
-            overflow: 'auto'
+            overflow: 'auto',
+            [responsive.mediaQuery('768px')]: {
+              padding: '25px',
+              borderRadius: '8px',
+              width: '450px'
+            },
+            [responsive.mediaQuery('480px')]: {
+              padding: '20px',
+              borderRadius: '6px',
+              width: '350px'
+            }
           }}>
             <h3>Register</h3>
             <form onSubmit={handleRegister}>
@@ -606,11 +606,8 @@ if (!formData.username.trim()) {
                   value={formData.username}
                   onChange={handleInputChange}
                   style={{
-                    width: '100%',
-                    padding: '10px',
-                    border: errors.username ? '1px solid red' : '1px solid #ddd',
-                    borderRadius: '4px',
-                    boxSizing: 'border-box'
+                     ...responsive.input,
+                     border: errors.username ? '1px solid red' : '1px solid #ddd'
                   }}
                   required
                 />
@@ -822,7 +819,7 @@ if (!formData.username.trim()) {
                 )}
               </div>
 
-              <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+              <div style={responsive.buttonGroup}>
                 <button
                   type="button"
                   onClick={() => setShowRegister(false)}

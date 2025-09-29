@@ -2,6 +2,7 @@ import React, { useEffect, useCallback,useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import API_BASE_URL from '../config/api';
+import { responsive } from '../utils/responsive';
 export default function HistoryPage({ user, onLogin, onLogout }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -278,14 +279,7 @@ useEffect(() => {
     }
   
     return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        gap: '10px',
-        marginTop: '30px',
-        flexWrap: 'wrap'
-      }}>
+      <div style={responsive.pagination}>
         {/* Previous page button */}
         <button
           onClick={() => handlePageChange(currentPage - 1)}
@@ -333,14 +327,24 @@ useEffect(() => {
   // Show login prompt for unauthenticated users
   if (!user) {
     return (
-      <div style={{ padding: '20px', maxWidth: '1100px', margin: '0 auto', textAlign: 'center' }}>
+      <div style={{ ...responsive.container,
+        textAlign: 'center'}}>
         <h2>📜 History Dashboard</h2>
         <div style={{
-          background: '#f8f9fa',
-          padding: '40px',
-          borderRadius: '10px',
-          border: '2px solid #dee2e6',
-          marginTop: '20px'
+           ...responsive.card,
+           background: '#f8f9fa',
+           padding: '40px',
+           borderRadius: '10px',
+           border: '2px solid #dee2e6',
+           marginTop: '20px',
+           [responsive.mediaQuery('768px')]: {
+             padding: '30px',
+             borderRadius: '8px'
+           },
+           [responsive.mediaQuery('480px')]: {
+             padding: '20px',
+             borderRadius: '6px'
+           }
         }}>
           <h3 style={{ color: '#6c757d', marginBottom: '20px' }}>Please Login First</h3>
           <p style={{ color: '#6c757d', marginBottom: '30px' }}>
@@ -390,7 +394,17 @@ useEffect(() => {
               padding: '30px',
               borderRadius: '10px',
               width: '400px',
-              maxWidth: '90vw'
+              maxWidth: '90vw',
+              [responsive.mediaQuery('768px')]: {
+                padding: '25px',
+                borderRadius: '8px',
+                width: '350px'
+              },
+              [responsive.mediaQuery('480px')]: {
+                padding: '20px',
+                borderRadius: '6px',
+                width: '320px'
+              }
             }}>
               <h3>Login</h3>
               <form onSubmit={handleLogin}>
@@ -401,13 +415,7 @@ useEffect(() => {
                     placeholder="Username"
                     value={formData.username}
                     onChange={handleInputChange}
-                    style={{
-                      width: '100%',
-                      padding: '10px',
-                      border: '1px solid #ddd',
-                      borderRadius: '4px',
-                      boxSizing: 'border-box'
-                    }}
+                    style={responsive.input}
                     required
                   />
                 </div>
@@ -420,11 +428,8 @@ useEffect(() => {
                       value={formData.password}
                       onChange={handleInputChange}
                       style={{
-                        width: '100%',
-                        padding: '10px 40px 10px 10px',
-                        border: '1px solid #ddd',
-                        borderRadius: '4px',
-                        boxSizing: 'border-box'
+                         ...responsive.input,
+                         padding: '10px 40px 10px 10px'
                       }}
                       required
                     />
@@ -484,7 +489,7 @@ useEffect(() => {
                     )}
                   </div>
                 )}
-                <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+                <div style={responsive.buttonGroup}>
                   <button
                     type="button"
                     onClick={() => setShowLogin(false)}
@@ -532,8 +537,18 @@ useEffect(() => {
   }
 
   return (
-    <div style={{ padding: '20px', maxWidth: '1100px', margin: '0 auto' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+    <div style={responsive.container}>
+      <div style={{ 
+        display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginBottom: '20px',
+  [responsive.mediaQuery('768px')]: {
+    flexDirection: 'column',
+    gap: '15px',
+    alignItems: 'stretch'
+  }
+  }}>
         <div>
       <h2>📜 History Dashboard</h2>
           <p style={{ color: '#6c757d', margin: '0' }}>
@@ -577,8 +592,16 @@ useEffect(() => {
           <p>Start by creating your first app prototype!</p>
         </div>
       ) : (
-        <>
-        <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '16px' }}>
+        <div style={{
+          overflowX: 'auto',
+          marginTop: '16px',
+          [responsive.mediaQuery('768px')]: {
+            fontSize: '0.9rem'
+          }
+        }}>
+        <table style={{ width: '100%', 
+    borderCollapse: 'collapse',
+    minWidth: '600px' }}>
           <thead>
             <tr style={{ backgroundColor: '#f8f9fa' }}>
               <th style={{ padding: '12px', textAlign: 'left' }}>App Name</th>
@@ -667,7 +690,7 @@ useEffect(() => {
         
       
         {renderPagination()}
-        </>
+        </div>
       )}
     
     </div>

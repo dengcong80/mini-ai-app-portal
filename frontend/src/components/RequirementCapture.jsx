@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import API_BASE_URL from '../config/api';
+import { responsive } from '../utils/responsive';
 const RequirementCapture = () => {
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
@@ -26,7 +27,7 @@ const RequirementCapture = () => {
   };
 
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '20px' }}>
+    <div style={responsive.container}>
       <h2>📝 Describe Your App</h2>
       <form onSubmit={handleSubmit}>
         <textarea
@@ -34,7 +35,10 @@ const RequirementCapture = () => {
           onChange={(e) => setDescription(e.target.value)}
           placeholder="e.g., I want a task app where managers can assign tasks..."
           rows="5"
-          style={{ width: '100%', padding: '10px', marginBottom: '10px' }}
+          style={{ ...responsive.input,
+            marginBottom: '10px',
+            height: '120px',
+            resize: 'vertical' }}
         />
         <br />
         <button

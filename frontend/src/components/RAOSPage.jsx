@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import API_BASE_URL from '../config/api';
+import { responsive } from '../utils/responsive';
 const RAOSPage = ({ user }) => {
   const [requirement, setRequirement] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -231,7 +232,7 @@ const RAOSPage = ({ user }) => {
   if (error) return <div style={{ padding: '20px', color: 'red' }}>{error}</div>;
 
   return (
-    <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
+    <div style={responsive.container}>
        {/* Overlay and prompt during UI generation */}
     {generating && (
       <div style={{
@@ -254,7 +255,17 @@ const RAOSPage = ({ user }) => {
           textAlign: 'center',
           boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
           maxWidth: '400px',
-          width: '90%'
+          width: '90%',
+          [responsive.mediaQuery('768px')]: {
+            padding: '30px',
+            borderRadius: '10px',
+            maxWidth: '350px'
+          },
+          [responsive.mediaQuery('480px')]: {
+            padding: '20px',
+            borderRadius: '8px',
+            maxWidth: '320px'
+          }
         }}>
           <div style={{
             fontSize: '48px',
@@ -408,13 +419,7 @@ const RAOSPage = ({ user }) => {
           type="text"
           value={editData.appName}
           onChange={(e) => handleEditChange('appName', e.target.value)}
-          style={{
-            width: '100%',
-            padding: '10px',
-            border: '1px solid #ddd',
-            borderRadius: '4px',
-            fontSize: '16px'
-          }}
+          style={responsive.input}
           placeholder="Enter app name"
         />
       ) : (
@@ -436,10 +441,9 @@ const RAOSPage = ({ user }) => {
                 value={role}
                 onChange={(e) => handleRoleChange(index, e.target.value)}
                 style={{
+                  ...responsive.input,
                   flex: 1,
-                  padding: '8px',
-                  border: '1px solid #ddd',
-                  borderRadius: '4px'
+                 padding: '8px'
                 }}
                 placeholder="Enter role"
               />
@@ -574,7 +578,15 @@ const RAOSPage = ({ user }) => {
               marginBottom: '15px',
               backgroundColor: '#f9f9f9'
             }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '10px' }}>
+              <div style={{ display: 'grid',
+               gridTemplateColumns: '1fr 1fr',
+               gap: '10px',
+               marginBottom: '10px',
+               [responsive.mediaQuery('480px')]: {
+               gridTemplateColumns: '1fr',
+               gap: '8px'
+                }
+                }}>
                 <div>
                   <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Role:</label>
                   <input
@@ -700,12 +712,14 @@ const RAOSPage = ({ user }) => {
     </div>
 
     <div style={{ 
-      display: 'flex', 
-      gap: '15px', 
+      ...responsive.buttonGroup,
       justifyContent: 'flex-end',
-      alignItems: 'center',
       paddingTop: '20px',
-      borderTop: '1px solid #e9ecef'
+      borderTop: '1px solid #e9ecef',
+      [responsive.mediaQuery('480px')]: {
+        flexDirection: 'column',
+        gap: '10px'
+      }
     }}>
       <button
         onClick={() => navigate('/dashboard')}

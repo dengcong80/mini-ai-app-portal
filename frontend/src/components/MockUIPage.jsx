@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import DOMPurify from 'dompurify';
 import API_BASE_URL from '../config/api';
+import { responsive } from '../utils/responsive';
 export default function MockUIPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -33,9 +34,17 @@ export default function MockUIPage() {
   }
 
   return (
-    <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
+    <div style={responsive.container}>
       {/* Navigation buttons */}
-      <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div style={{  marginBottom: '20px',
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  [responsive.mediaQuery('768px')]: {
+    flexDirection: 'column',
+    gap: '15px',
+    alignItems: 'stretch'
+  } }}>
         <button
           onClick={() => navigate(-1)}
           style={{
@@ -51,7 +60,12 @@ export default function MockUIPage() {
         </button>
 
         {/* Toggle buttons */}
-        <div style={{ display: 'flex', gap: '10px' }}>
+        <div style={{ display: 'flex',
+  gap: '10px',
+  [responsive.mediaQuery('480px')]: {
+    flexDirection: 'column',
+    gap: '8px'
+  } }}>
           <button
             onClick={() => setViewMode('ui')}
             style={{
@@ -88,9 +102,8 @@ export default function MockUIPage() {
         // UI preview mode
         <div  lang="en"
           style={{
+            ...responsive.card,
             border: '1px solid #ddd',
-            borderRadius: '8px',
-            padding: '20px',
             backgroundColor: 'white',
             boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
             minHeight: '400px'

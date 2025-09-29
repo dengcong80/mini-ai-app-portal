@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import API_BASE_URL from '../config/api';
+import { responsive, mediaQuery } from '../utils/responsive';
 export default function HomePage({ user, onLogin, onLogout }) {
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
@@ -138,14 +139,23 @@ const handleRegisterRedirect = () => {
    // Show login prompt for unauthenticated users
    if (!user) {
     return (
-      <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
+      <div style={{...responsive.container,
+        textAlign: 'center'}}>
         
         <div style={{
           background: '#f8f9fa',
           padding: '40px',
           borderRadius: '10px',
           border: '2px solid #dee2e6',
-          marginTop: '20px'
+          marginTop: '20px',
+          [mediaQuery('768px')]: {
+            padding: '30px',
+            borderRadius: '8px'
+          },
+          [mediaQuery('480px')]: {
+            padding: '20px',
+            borderRadius: '6px'
+          }
         }}>
           <h2 style={{ color: '#6c757d', marginBottom: '20px' }}>Welcome to Mini AI App Portal</h2>
           <p style={{ color: '#6c757d', marginBottom: '30px' }}>
@@ -196,7 +206,17 @@ const handleRegisterRedirect = () => {
               padding: '30px',
               borderRadius: '10px',
               width: '400px',
-              maxWidth: '90vw'
+              maxWidth: '90vw',
+              [mediaQuery('768px')]: {
+                padding: '25px',
+                borderRadius: '8px',
+                width: '350px'
+              },
+              [mediaQuery('480px')]: {
+                padding: '20px',
+                borderRadius: '6px',
+                width: '320px'
+              }
             }}>
               <h3>Login</h3>
               <form onSubmit={handleLogin}>
@@ -207,13 +227,7 @@ const handleRegisterRedirect = () => {
                     placeholder="Username"
                     value={formData.username}
                     onChange={handleInputChange}
-                    style={{
-                      width: '100%',
-                      padding: '10px',
-                      border: '1px solid #ddd',
-                      borderRadius: '4px',
-                      boxSizing: 'border-box'
-                    }}
+                    style={responsive.input}
                     required
                   />
                 </div>
@@ -226,11 +240,8 @@ const handleRegisterRedirect = () => {
                       value={formData.password}
                       onChange={handleInputChange}
                       style={{
-                        width: '100%',
-                        padding: '10px 40px 10px 10px',
-                        border: '1px solid #ddd',
-                        borderRadius: '4px',
-                        boxSizing: 'border-box'
+                         ...responsive.input,
+                         padding: '10px 40px 10px 10px'
                       }}
                       required
                     />
@@ -291,7 +302,7 @@ const handleRegisterRedirect = () => {
                     )}
                   </div>
                 )}
-                <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+                <div style={responsive.buttonGroup}>
                   <button
                     type="button"
                     onClick={() => setShowLogin(false)}
@@ -331,7 +342,7 @@ const handleRegisterRedirect = () => {
 
 
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+    <div style={responsive.container}>
 
     {/* Full-screen overlay and prompt during AI analysis */}
     {loading && (
@@ -393,11 +404,19 @@ const handleRegisterRedirect = () => {
       )}
 
       <div style={{
-        background: 'white',
-        padding: '30px',
-        borderRadius: '15px',
-        boxShadow: '0 5px 15px rgba(0,0,0,0.08)',
-        marginBottom: '25px'
+         ...responsive.card,
+         padding: '30px',
+         borderRadius: '15px',
+         boxShadow: '0 5px 15px rgba(0,0,0,0.08)',
+         marginBottom: '25px',
+         [mediaQuery('768px')]: {
+           padding: '25px',
+           borderRadius: '12px'
+         },
+         [mediaQuery('480px')]: {
+           padding: '20px',
+           borderRadius: '10px'
+         }
       }}>
         <h2 style={{
           color: '#2c3e50',
@@ -440,7 +459,15 @@ const handleRegisterRedirect = () => {
           background: '#f8f9fa',
           padding: '20px',
           borderRadius: '10px',
-          marginBottom: '20px'
+          marginBottom: '20px',
+          [mediaQuery('768px')]: {
+            padding: '15px',
+            borderRadius: '8px'
+          },
+          [mediaQuery('480px')]: {
+            padding: '12px',
+            borderRadius: '6px'
+          }
         }}>
           <h4 style={{
             color: '#495057',
@@ -453,9 +480,12 @@ const handleRegisterRedirect = () => {
             Example Prompts
           </h4>
           <div style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: '10px'
+             display: 'flex',
+             flexWrap: 'wrap',
+             gap: '10px',
+             [mediaQuery('480px')]: {
+               gap: '8px'
+             }
           }}>
             <span
               onClick={() =>  !isOperationDisabled && fillPrompt('I want an app to manage student courses and grades. Teachers add courses, students enrol, and admins manage reports.')}
@@ -548,7 +578,7 @@ opacity: isOperationDisabled ? 0.6 : 1, // ✅ New: Semi-transparent during anal
             disabled={loading} // ✅ New: Disable input during analysis
             placeholder="e.g., I want an app to manage student courses and grades. Teachers add courses, students enrol, and admins manage reports...."
             style={{
-              width: '100%',
+              ...responsive.input,
               height: '200px',
               padding: '15px',
               border: descriptionError ? '2px solid #dc3545' : '2px solid #e9ecef',
@@ -558,7 +588,12 @@ opacity: isOperationDisabled ? 0.6 : 1, // ✅ New: Semi-transparent during anal
               resize: 'vertical',
               transition: 'border-color 0.3s ease',
               outline: 'none',
-              backgroundColor: descriptionError ? '#fff5f5' : 'white'
+              backgroundColor: descriptionError ? '#fff5f5' : 'white',
+              [mediaQuery('480px')]: {
+                height: '150px',
+                padding: '12px',
+                fontSize: '16px'
+              }
             }}
             onFocus={(e) => {
               if (!descriptionError) {
@@ -583,9 +618,8 @@ opacity: isOperationDisabled ? 0.6 : 1, // ✅ New: Semi-transparent during anal
 
         {/* Form Actions */}
         <div style={{
-          display: 'flex',
+          ...responsive.buttonGroup,
           justifyContent: 'flex-end',
-          gap: '10px',
           marginTop: '20px'
         }}>
           <button
